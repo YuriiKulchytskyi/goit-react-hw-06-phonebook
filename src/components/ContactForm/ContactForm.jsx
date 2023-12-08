@@ -1,49 +1,58 @@
-import { useState } from 'react';
-import { Form, Input, Button } from './ContactForm.style';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { saveContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/contactsSlice';
+import { Form, Input, Text, Button } from './ContactForm.styled';
 
-export const ContactForm = () => {
+function ContactForm() {
   const dispatch = useDispatch();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    number: '',
-  });
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
+  const handleNameChange = event => {
+    setName(event.target.value);
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    dispatch(saveContact({ ...formData, id: Math.floor(Math.random() * 1000) }));
-    setFormData({ name: '', number: '' });
+  const handleNumberChange = event => {
+    setNumber(event.target.value);
   };
 
-  const { name, number } = formData;
+  const handleSubmit = event => {
+    event.preventDefault();
 
+    if (name.trim() === '' || number.trim() === '') {
+      return;
+    }
+
+    dispatch(addContact(name, number));
+    setName('');
+    setNumber('');
+  };
 
   return (
     <Form onSubmit={handleSubmit}>
+      <Text>Name</Text>
       <Input
         type="text"
         name="name"
         required
-        placeholder="Enter name"
         value={name}
-        onChange={handleChange}
+        onChange={handleNameChange}
       />
+
+      <Text>Number</Text>
       <Input
         type="tel"
         name="number"
         required
-        placeholder="Enter number"
         value={number}
-        onChange={handleChange}
+        onChange={handleNumberChange}
       />
-      <Button type="submit">Add contact</Button>
+
+      <Button type="submit">Add
+      </Button>
     </Form>
   );
-};
+}
+
+export default ContactForm;
