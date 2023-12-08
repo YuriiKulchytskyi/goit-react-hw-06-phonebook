@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from '../../redux/contactsSlice';
 import { Form, Input, Text, Button } from './ContactForm.styled';
 
 function ContactForm() {
   const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts);
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
@@ -20,15 +21,27 @@ function ContactForm() {
   const handleSubmit = event => {
     event.preventDefault();
 
-    if (name.trim() === '' || number.trim() === '') {
+    const trimmedName = name.trim();
+    const trimmedNumber = number.trim();
+
+    if (trimmedName === '' || trimmedNumber === '') {
       return;
     }
 
-    dispatch(addContact(name, number));
+    const contactExists = contacts.some(
+      contact =>
+        contact.name === trimmedName || contact.number === trimmedNumber
+    );
+
+    if (contactExists) {
+      alert('This contact already exists.');
+      return;
+    }
+
+    dispatch(addContact(trimmedName, trimmedNumber));
     setName('');
     setNumber('');
   };
-
   return (
     <Form onSubmit={handleSubmit}>
       <Text>Name</Text>
@@ -49,8 +62,7 @@ function ContactForm() {
         onChange={handleNumberChange}
       />
 
-      <Button type="submit">Add
-      </Button>
+      <Button type="submit">Add</Button>
     </Form>
   );
 }
